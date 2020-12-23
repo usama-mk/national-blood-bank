@@ -1,7 +1,99 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { db } from '../firebase';
 import logo from "../resources/images/logo2em.svg";
 
 export default function Blood() {
+    const [donationsData, setDonationsData]= useState([])
+    var [abrhM, setAbrhM]= useState(0);
+    var [arhM, setArhM]=useState(0);
+    var [brhM, setBrhM]=useState(0);
+    var [abrhP, setAbrhP]=useState(0);
+    var arhm;
+    var brhm;
+    var abrhm;
+    var abrhp;
+    
+    useEffect(()=>{
+        const unsubscribe = db.collection('donations').onSnapshot((snapshot)=>
+        {
+            if(!snapshot){
+                return;
+            }
+            setDonationsData(snapshot.docs.map(doc =>                              
+           ({
+               id: doc.id,        //the unique 'auto' ids
+               data: doc.data(),  //the data inside the doc(coll>doc>data)
+           })
+           ))
+        } ) ;
+     //    console.log(posters[0].data.name);
+    //  getPercentagesForBlood();
+    db.collection("counts").doc("ARh-").get().then(function(doc) {
+        if (doc.exists) {
+            console.log(doc.data().ARhM)
+          setArhM(doc.data().ARhM)
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+
+    db.collection("counts").doc("BRh-").get().then(function(doc) {
+        if (doc.exists) {
+            console.log(doc.data().BRhM)
+          setBrhM(doc.data().BRhM)
+        } else {
+             
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+       
+    
+    db.collection("counts").doc("ABRh-").get().then(function(doc) {
+        if (doc.exists) {
+          setAbrhM(doc.data().ABRhM)
+        } else {
+             
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+       
+    
+    db.collection("counts").doc("ABRh+").get().then(function(doc) {
+        if (doc.exists) {
+          setAbrhP(doc.data().ABRhP)
+          console.log(abrhp)
+          
+        } else {
+             
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+
+      
+    
+        return () => {      //when comp cleansup/unmount(cleansup is better), (always) detach this real time listener after it's done using it(best def)
+            unsubscribe();  //this is for optimization
+        }
+    },[])
+    
+
+   
+    
+
+
+    
+         
+
+    
     return (
         <div>
           
@@ -38,85 +130,40 @@ export default function Blood() {
                             <td>ABRh-</td>
                             <td class="td-progress">
                                 <div class="progress">
-                                    <div class="progress-bar bg-danger" style={{width: "15%"}} role="progressbar" aria-valuemin="0" aria-valuemax="100">15%</div>
+                                    <div class="progress-bar bg-danger" style={{width: `${abrhM}%`}} role="progressbar" aria-valuemin="0" aria-valuemax="100">{abrhM}%</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td class="bg">ABRh-</td>
+                            <td class="bg">ABRh+</td>
                             <td class="td-progress">
                                <div class="progress">
-                                    <div class="progress-bar bg-danger" style={{width: "35%"}} role="progressbar"
-                                        aria-valuemin="0" aria-valuemax="100">35%</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-
-                            <td>ABRh-</td>
-                            <td class="td-progress">
-                               <div class="progress">
-                                    <div class="progress-bar bg-danger" style={{width: "100%"}} role="progressbar"
-                                        aria-valuemin="0" aria-valuemax="100">100%</div>
+                                    <div class="progress-bar bg-danger" style={{width: `${abrhP}%`}} role="progressbar"
+                                        aria-valuemin="0" aria-valuemax="100">{abrhP}%</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
 
-                            <td class="bg">ABRh-</td>
+                            <td>ARh-</td>
                             <td class="td-progress">
                                <div class="progress">
-                                    <div class="progress-bar bg-danger" style={{width: "4%"}} role="progressbar"
-                                        aria-valuemin="0" aria-valuemax="100">4%</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>ABRh-</td>
-                            <td class="td-progress">
-                               <div class="progress">
-                                    <div class="progress-bar bg-danger" style={{width: "0%"}} role="progressbar"
-                                        aria-valuemin="0" aria-valuemax="100">0%</div>
+                                    <div class="progress-bar bg-danger" style={{width: `${arhM}%`}} role="progressbar"
+                                        aria-valuemin="0" aria-valuemax="100">{arhM}%</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
 
-                            <td>ABRh-</td>
+                            <td class="bg">BRh-</td>
                             <td class="td-progress">
                                <div class="progress">
-                                    <div class="progress-bar bg-danger" style={{width: "99%"}} role="progressbar"
-                                        aria-valuemin="0" aria-valuemax="100">99%</div>
+                                    <div class="progress-bar bg-danger" style={{width: `${brhM}%`}} role="progressbar"
+                                        aria-valuemin="0" aria-valuemax="100">{brhM}%</div>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td>ABRh-</td>
-                            <td class="td-progress">
-                               <div class="progress">
-                                    <div class="progress-bar bg-danger" style={{width: "20%"}} role="progressbar"
-                                        aria-valuemin="0" aria-valuemax="100">20%</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>ABRh-</td>
-                            <td class="td-progress">
-                               <div class="progress">
-                                    <div class="progress-bar bg-danger" style={{width: "30%"}} role="progressbar"
-                                        aria-valuemin="0" aria-valuemax="100">30%</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>ABRh-</td>
-                            <td class="td-progress">
-                               <div class="progress">
-                                    <div class="progress-bar bg-danger" style={{width: "10%"}} role="progressbar"
-                                        aria-valuemin="0" aria-valuemax="100">10%</div>
-                                </div>
-                            </td>
-                        </tr>
+                        
                        
                     </tbody>
                 </table>

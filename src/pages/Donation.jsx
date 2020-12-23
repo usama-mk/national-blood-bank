@@ -1,10 +1,111 @@
 import React from 'react'
+import { db } from '../firebase';
 import logo from "../resources/images/logo2em.svg";
 
 export default function Donation() {
     const donate=()=>{
-       const donateDetails= Array.from(document.querySelectorAll("#form input,select")).reduce((acc,input,select)=>({...acc, [input.id]: input.value, [select.id]:select.value}),{})
-        console.log(donateDetails)
+       const donationDetails= Array.from(document.querySelectorAll("#form input,select")).reduce((acc,input,select)=>({...acc, [input.id]: input.value, [select.id]:select.value}),{})
+       delete donationDetails.undefined 
+       console.log(donationDetails);
+
+        // add to firestore
+       
+        if(donationDetails.bloodtype=='ABRh+'){
+            console.log("ABRh+ blood type")
+            // bloodData.data.amount
+            var docRefa = db.collection("counts").doc("ABRh+");
+           
+            docRefa.get().then(function(doc) {
+                if (doc.exists) {
+                       docRefa.set({
+                        ABRhP: doc.data().ABRhP + 1
+                    })
+                    
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                }
+            }).catch(function(error) {
+                console.log("Error getting document:", error);
+            });
+            
+        }
+        else if(donationDetails.bloodtype=='ABRh-'){
+            
+            
+            var docRefb = db.collection("counts").doc("ABRh-");
+            docRefb.get().then(function(doc) {
+                if (doc.exists) {
+                    if(doc.data().ABRhM){
+                       docRefb.set({
+                        ABRhM: doc.data().ABRhM + 1
+                    })
+                    }
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                }
+            }).catch(function(error) {
+                console.log("Error getting document:", error);
+            });
+            
+        }
+
+        else if(donationDetails.bloodtype=='BRh-'){
+           
+            var docRefc = db.collection("counts").doc("BRh-");
+           
+            docRefc.get().then(function(doc) {
+                if (doc.exists) {
+                    console.log("ji")
+                    
+                       docRefc.set({
+                        BRhM: doc.data().BRhM + 1
+                    })
+                    
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                }
+            }).catch(function(error) {
+                console.log("Error getting document:", error);
+            });
+            
+        }
+
+        else if(donationDetails.bloodtype=='ARh-'){
+            console.log("ARh- blood type")
+            // bloodData.data.amount
+            
+          
+            var docRefd = db.collection("counts").doc("ARh-");
+           
+            docRefd.get().then(function(doc) {
+                if (doc.exists) {
+                
+                       docRefd.set({
+                        ARhM: doc.data().ARhM + 1
+                    })
+                    
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                }
+            }).catch(function(error) {
+                console.log("Error getting document:", error);
+            });
+            
+        }
+        var docRef = db.collection("donations").doc();
+        donationDetails.id=docRef.id;
+        docRef.set(donationDetails)
+        .then(function(docRef) {
+            // console.log("Document written with ID: ", docRef.id);
+            console.log("donation successfull");
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+        });
     }
     return (
         <div>
@@ -71,7 +172,7 @@ export default function Donation() {
                     <div class="form-row">
                         <div class="col-md-4 mb-3">
                             <label for="state">State</label>
-                            <select onSelect={(e)=>e.target.value} class="custom-select d-block w-100"name="state" id="state" required>
+                            <select class="custom-select d-block w-100"name="state" id="state" required>
                                 <option  >Choose a state</option>
                                 <option value="Mazowieckie">Mazowieckie</option>
                                 <option value="Kujawsko-pomorskie" >Kujawsko-pomorskie</option>
