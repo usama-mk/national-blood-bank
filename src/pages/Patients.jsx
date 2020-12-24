@@ -1,7 +1,80 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { db } from '../firebase';
 import logo from '../resources/images/logo2em.svg';
 
 export default function Patients() {
+
+  const [patients, setPatients]= useState([])
+  var edit=false;
+  var eid="";
+
+  useEffect(()=>{
+    db.collection("patients").onSnapshot((snapshot)=>{
+      if(!snapshot){
+         return
+      }
+     setPatients(snapshot.docs.map((doc)=>(
+       {
+         id: doc.id,
+         data: doc.data()
+       }
+     )))
+    })
+  },[])
+
+  const submitPatient=()=>{
+    const patientDetails= Array.from(document.querySelectorAll("#form select,input,select")).reduce((acc,input,select)=>({...acc, [input.id]: input.value, [select.id]:select.value}),{})
+    delete patientDetails.undefined 
+    console.log(patientDetails);
+    if(!edit){
+      var docRef = db.collection("patients").doc();
+      patientDetails.id=docRef.id;
+    }
+    else{
+      var docRef = db.collection("patients").doc(eid);
+      patientDetails.id=eid;
+    }
+    docRef.set(patientDetails)
+    .then(function(docRef) {
+        // console.log("Document written with ID: ", docRef.id);
+        console.log("donation successfull");
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
+    });
+  }
+
+   const rowPatientData=(id, number, firstName, lastName, bloodType)=>{
+     return <tr>
+              <td>{number}</td>
+              <td>{firstName}</td>
+              <td>{lastName}</td>
+              <td>{bloodType}</td>
+              <td class="text-center">
+                <button onClick={()=>{deletePatient(id)}} class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
+                <button onClick={()=>{editPatient(id)}}  data-toggle="modal"
+          data-target="#editPatient" class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
+              </td>
+            </tr>
+    
+   }
+
+   const deletePatient=(id)=>{
+    db.collection("patients").doc(id).delete().then(function() {
+      console.log("Document successfully deleted!");
+  }).catch(function(error) {
+      console.error("Error removing document: ", error);
+  });
+   }
+
+   const editPatient=(id)=>{
+     edit= true;
+     eid=id;
+    //  db.collection("patients").doc({id}).update({
+       
+    //  })
+   } 
+
     return (
         <div>       
   <header>
@@ -33,167 +106,15 @@ export default function Patients() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1,001</td>
-              <td>Lorem</td>
-              <td>ipsum</td>
-              <td class="bg-danger">ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary" data-toggle="modal" type="submit" data-target="#editPatient"><i
-                    class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,002</td>
-              <td>amet</td>
-              <td>consectetur</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>Integer</td>
-              <td>nec</td>
-              <td class="bg-warning">ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>libero</td>
-              <td>Sed</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,004</td>
-              <td>dapibus</td>
-              <td>diam</td>
-              <td class="bg-warning">ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,005</td>
-              <td>Nulla</td>
-              <td>quis</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,006</td>
-              <td>nibh</td>
-              <td>elementum</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,007</td>
-              <td>sagittis</td>
-              <td>ipsum</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,008</td>
-              <td>Fusce</td>
-              <td>nec</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,009</td>
-              <td>augue</td>
-              <td>semper</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,010</td>
-              <td>massa</td>
-              <td>Vestibulum</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,011</td>
-              <td>eget</td>
-              <td>nulla</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,012</td>
-              <td>taciti</td>
-              <td>sociosqu</td>
-              <td>ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,013</td>
-              <td>torquent</td>
-              <td>per</td>
-              <td> ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,014</td>
-              <td>per</td>
-              <td>inceptos</td>
-              <td class="bg-danger">ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>1,015</td>
-              <td>sodales</td>
-              <td>ligula</td>
-              <td class="bg-danger">ABRh-</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
+             {/* {rowPatientData("1.1.1", "1", "MK", "Kay","B+")} */}
+             {patients.map((patient)=>{
+                
+               return rowPatientData(patient.data.id,"1", patient.data.firstName, patient.data.lastName, patient.data.bloodtype )
+             })}
+              
+          
+   
+            
           </tbody>
         </table>
       </div>
@@ -203,6 +124,7 @@ export default function Patients() {
           Add patient
         </button>
       </div>
+      {/* modal */}
       <div class="modal fade" id="editPatient" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -217,14 +139,14 @@ export default function Patients() {
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label>Name</label>
-                    <input type="text" class="form-control" id="firstName" placeholder="" value="" required=""/>
+                    <input type="text" class="form-control" id="firstName" placeholder="" required=""/>
                     <div class="invalid-feedback">
                       Imię jest wymagane
                     </div>
                   </div>
                   <div class="col-md-6 mb-3">
                     <label for="lastName">Last name</label>
-                    <input type="text" class="form-control" id="lastName" placeholder="" value="" required=""/>
+                    <input type="text" class="form-control" id="lastName" placeholder=""   required=""/>
                     <div class="invalid-feedback">
                       Nazwisko jest wymagane
                     </div>
@@ -316,9 +238,9 @@ export default function Patients() {
             </div>
             <div class="modal-footer">
               <div class="row">
-                <div class="col-6"> <a href="patients.html" class="btn btn-warning btn-block">
+                <div class="col-6" data-dismiss="modal" > <a  class="btn btn-warning btn-block">
                     <i class="fas fa-times"></i></a></div>
-                <div class="col-6"> <a id="submitPatient" href="patients.html" class="btn btn-success">
+                <div class="col-6" onClick={submitPatient} data-dismiss="modal"  > <a id="submitPatient"  class="btn btn-success">
                     <i class="fas fa-check"></i></a></div>
               </div>
             </div>
