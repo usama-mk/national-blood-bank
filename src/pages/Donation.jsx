@@ -101,6 +101,7 @@ export default function Donation() {
         docRef.set(donationDetails)
         .then(function(docRef) {
             // console.log("Document written with ID: ", docRef.id);
+            document.getElementById("form").reset();
             console.log("donation successfull");
         })
         .catch(function(error) {

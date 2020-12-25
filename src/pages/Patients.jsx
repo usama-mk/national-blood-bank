@@ -37,7 +37,9 @@ export default function Patients() {
     docRef.set(patientDetails)
     .then(function(docRef) {
         // console.log("Document written with ID: ", docRef.id);
-        console.log("donation successfull");
+        document.getElementById("myForm").reset();
+    
+        console.log("patient added successfull");
     })
     .catch(function(error) {
         console.error("Error adding document: ", error);
@@ -70,6 +72,7 @@ export default function Patients() {
    const editPatient=(id)=>{
      edit= true;
      eid=id;
+     
     //  db.collection("patients").doc({id}).update({
        
     //  })
@@ -135,7 +138,7 @@ export default function Patients() {
               </button>
             </div>
             <div class="modal-body">
-              <form class="needs-validation" novalidate="">
+              <form class="needs-validation" id="myForm" novalidate="">
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label>Name</label>

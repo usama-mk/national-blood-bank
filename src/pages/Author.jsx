@@ -1,7 +1,46 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { db } from '../firebase';
 import logo from '../resources/images/logo2em.svg';
 
 export default function Author() {
+    const[heading, setHeading]= useState("")
+    const[body, setBody]=useState("");
+    const[edit, setEdit]= useState(false);
+
+    const toggleEdit=()=>{
+        setEdit(prevValue=> !prevValue);
+    }
+
+   const  _handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+          console.log('do validate');
+          setEdit(prevValue=> !prevValue);
+          db.collection("authorInfo").doc("AgdH9NKp3yC3V20KmhMw").set({
+            heading:  heading,
+            body: body,
+             
+        })
+        .then(function() {
+            console.log("Document successfully written!");
+        })
+        .catch(function(error) {
+            console.error("Error writing document: ", error);
+        });
+         
+    
+        }
+      }
+     const handleChange= (e)=>{
+        const {value, name} = e.target;
+        console.log(name);
+        if(name=="heading"){
+            setHeading(value)
+        }
+       else if(name=="body"){
+           setBody(value)
+       }
+      }
+
     return (
         <div>
             
@@ -20,9 +59,17 @@ export default function Author() {
 
         <section class="jumbotron text-center py-2">
             <div class="container">
-                <h4 class="jumbotron-heading">_____ __________</h4>
-                <h5 class="jumbotron-body">_______</h5>
-                <h6 class="jumbotron-body">No more info here</h6>
+            <i class="fas fa-edit" onClick={toggleEdit}></i>  {
+                edit? 
+               < input style={{background: "transparent", }} onKeyDown={_handleKeyDown} name="heading" type="text" onChange={handleChange} value={heading}/>
+                :<h4 class="jumbotron-heading">{heading}</h4>
+            }
+            <i class="fas fa-edit" onClick={toggleEdit}></i>  {
+                edit? 
+               < input style={{background: "transparent", }} onKeyDown={_handleKeyDown} name="body" type="text" onChange={handleChange} value={body}/>
+                :<h4 class="jumbotron-heading">{body}</h4>
+            }
+            <h6 class="jumbotron-body">No more info here</h6>
             </div>
         </section>
 
