@@ -102,7 +102,7 @@ export default function Blood() {
             <div class="container d-flex justify-content-start">
                 <span class="navbar-brand d-flex">
                     <img alt="logo" src={logo}/>
-                    <strong><a class="brand" href="/">National Blood Donation System</a></strong>
+                    <strong><a class="brand" href="/home">National Blood Donation System</a></strong>
                 </span>
             </div>
         </div>

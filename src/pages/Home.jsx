@@ -1,35 +1,22 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import '../resources/styles/brand.css';
 import myFaceImg from '../resources/images/myface.jpg';
 import logo from '../resources/images/logo2em.svg';
 import { firebaseApp } from '../firebase';
 import Button from '@material-ui/core/Button';
+import { LoginContext } from './Login/LoginContext';
 
 
 export default function Home() {
-    const [user, setUser] = useState("");
-
-    useEffect(()=>{
-        authListener(); 
-    },[]);
-
+    const [user, setUser] = useContext(LoginContext);
+    
     const handleLogout= ()=>{
         firebaseApp.auth().signOut().then(()=>{
             window.location.assign("/");
         });
         
     }
-    
-    const authListener = ()=>{
-        firebaseApp.auth().onAuthStateChanged((user)=>{
-            if(user){
-                setUser(user);
-            }
-            else{
-                setUser("");
-            }
-        })
-    }
+   
     return (
         <body>
         <header>
@@ -37,7 +24,7 @@ export default function Home() {
                 <div class="container d-flex justify-content-space-between">
                     <span class="navbar-brand d-flex">
                         <img alt="logo" src={logo}/>
-                        <strong><a class="brand" href="/">National Blood Donation System</a></strong>
+                        <strong><a class="brand" href="/home">National Blood Donation System</a></strong>
                     </span>
                     <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}} >
                         <h5>Logged in as: {user.email} </h5>

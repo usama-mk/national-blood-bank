@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,6 +15,7 @@ import Container from '@material-ui/core/Container';
 import firebaseApp, { provider } from '../../firebase';
 import './Login.css';
 import { IconButton, Input } from '@material-ui/core';
+import { LoginContext } from './LoginContext';
  
  
 
@@ -54,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 function Login(props) {
    
     const classes = useStyles();
-    const [user, setUser] = useState("");
+    const [user, setUser] = useContext(LoginContext);
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 const [Emailerror, setEmailError] = useState("");
@@ -63,7 +64,7 @@ const [signup, setSignup] = useState("");
 
 const handleLogin = ()=>{
     clearErrors();
-    firebaseApp.auth().signInWithEmailAndPassword(email, password).then(()=>{
+    firebaseApp.auth().signInWithEmailAndPassword(email, password).then((user)=>{
         handleHomeRoute();
     }).catch(error=>{
         switch(error.code){
@@ -100,21 +101,7 @@ const authListener = ()=>{
     })
 }
 
-const toggleSignup = ()=>{
-    setSignup(!signup);
-}
 
-const handleSignup = ()=>{
-    firebaseApp.auth().createUserWithEmailAndPassword(email, password).then(()=>{
-       handleHomeRoute();
-    }).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log(errorCode)
-        // ...
-      });
-}
 
 useEffect(()=>{
     authListener(); //on app starting check if user is available or not
@@ -139,19 +126,9 @@ const clearErrors = ()=>{
   setEmailError('');
   setPasswordError('');
 }
-const loginWIthGoogle=()=>{
-    firebaseApp.auth().signInWithPopup(provider).then((result)=>{
-        //Auth changes which triggers onAuthStateChanged (in auth state change method ) and sets the user
-     }).then(
-         ()=>{
-             handleHomeRoute();
-         }
-     ).catch((error)=>{
-         alert(error.message);
-     })
-}
+
 const handleHomeRoute=()=>{
-    window.location.assign("/home");
+    window.location.assign("/");
 }
 
     return (
@@ -161,8 +138,6 @@ const handleHomeRoute=()=>{
             <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
-            <Button  style={{backgroundColor:"#ffcc00",color:"black", fontWeight:"bold"}} onClick={handleHomeRoute}>Home</Button>
-
             <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
                 </Avatar>
@@ -198,20 +173,8 @@ const handleHomeRoute=()=>{
                         onChange={handlePassword}
                     />
                     <p className="errorMsg">{passwordError}</p>
-                    {/* <FormControlLabel
-                        control={<Checkbox value="remember" color="primary" />}
-                        label="Remember me"
-                    /> */}
-                  {signup?<Button
-                        
-                        fullWidth
-                        variant="contained"
-                         
-                        className={`${classes.submit} ${ classes.contained}`}
-                        onClick={handleSignup}
-                    >
-                        Sign Up
-          </Button>: <Button
+                   
+                  { <Button
                         
                         fullWidth
                         variant="contained"
@@ -221,32 +184,7 @@ const handleHomeRoute=()=>{
                     >
                         Sign In
           </Button> }  
-          <div style={{textAlign:"center"}}>
-          <h2>
-              OR:
-          </h2>
-          </div>
-          <Button style={{justifyContent:"center", height:"40px", width:"100%"}} size="small">
-        <div onClick={loginWIthGoogle} style={{backgroundColor:"white", height:"40px",width:"100%",   display:"flex", justifyContent:"center", alignItems:"center" }}>
-            <img src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-icon-png-transparent-background-osteopathy-16.png" width="20" height="20" style={{marginRight:"15px"}}  alt="Google Logo"/>
-         <h4>
-              {signup?<span style={{fontSize:"14px"}} >Login with Google</span>: <span style={{fontSize:"14px"}}>Login with Google</span>}
-          </h4>
-         </div>
-         </Button>
-       
-                    { <Grid container>
-                        {/* <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Forgot password?
-              </Link>
-                        </Grid> */}
-                        <Grid style={{margin:"20px"}} item>
-                            <Link onClick={toggleSignup} href="#" variant="body2" style={{color:"#4b5a6c" }} >
-                                {"New user? Create Account"}
-                            </Link>
-                        </Grid>
-                    </Grid> }
+          
                 </form>
             </div>
             {/* <Box mt={8}>

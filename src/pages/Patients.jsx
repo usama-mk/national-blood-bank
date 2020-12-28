@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext} from 'react'
 import { db } from '../firebase';
 import logo from '../resources/images/logo2em.svg';
+import { LoginContext } from './Login/LoginContext';
+import firebase from 'firebase';
 
 export default function Patients() {
-
+  
   const [patients, setPatients]= useState([])
   var edit=false;
   var eid="";
 
   useEffect(()=>{
-    db.collection("patients").onSnapshot((snapshot)=>{
+    db.collection("patients").orderBy("timeStamp" , "asc").onSnapshot((snapshot)=>{
       if(!snapshot){
          return
       }
@@ -24,6 +26,7 @@ export default function Patients() {
 
   const submitPatient=()=>{
     const patientDetails= Array.from(document.querySelectorAll("#form select,input,select")).reduce((acc,input,select)=>({...acc, [input.id]: input.value, [select.id]:select.value}),{})
+    patientDetails.timeStamp= firebase.firestore.FieldValue.serverTimestamp();
     delete patientDetails.undefined 
     console.log(patientDetails);
     if(!edit){
@@ -85,7 +88,7 @@ export default function Patients() {
       <div class="container d-flex justify-content-start">
         <span class="navbar-brand d-flex">
           <img alt="logo" src={logo}/>
-          <strong><a class="brand" href="/">National Blood Donation System</a></strong>
+          <strong><a class="brand" href="/home">National Blood Donation System</a></strong>
         </span>
       </div>
     </div>
@@ -110,9 +113,9 @@ export default function Patients() {
           </thead>
           <tbody>
              {/* {rowPatientData("1.1.1", "1", "MK", "Kay","B+")} */}
-             {patients.map((patient)=>{
+             {patients.map((patient, index)=>{
                 
-               return rowPatientData(patient.data.id,"1", patient.data.firstName, patient.data.lastName, patient.data.bloodtype )
+               return rowPatientData(patient.data.id, index+1, patient.data.firstName, patient.data.lastName, patient.data.bloodtype )
              })}
               
           

@@ -115,7 +115,7 @@ export default function Donation() {
             <div class="container d-flex justify-content-start">
                 <span class="navbar-brand d-flex">
                     <img alt="logo" src={logo}/>
-                    <strong><a class="brand" href="/">National Blood Donation System</a></strong>
+                    <strong><a class="brand" href="/home">National Blood Donation System</a></strong>
                 </span>
             </div>
         </div>
@@ -256,7 +256,7 @@ export default function Donation() {
                                         Your blood has been automatically donated online
                                     </div>
                                     <div class="modal-footer">
-                                        <a href="/" class="btn btn-danger btn-block">Finish</a>
+                                        <a href="/home" class="btn btn-danger btn-block">Finish</a>
                                     </div>
                                 </div>
                             </div>
