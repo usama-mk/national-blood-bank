@@ -9,6 +9,7 @@ export default function Patients() {
   const [patients, setPatients]= useState([])
   var edit=false;
   var eid="";
+  var data={};
 
   useEffect(()=>{
     db.collection("patients").orderBy("timeStamp" , "asc").onSnapshot((snapshot)=>{
@@ -49,94 +50,28 @@ export default function Patients() {
     });
   }
 
-   const rowPatientData=(id, number, firstName, lastName, bloodType)=>{
-     return <tr>
-              <td>{number}</td>
-              <td>{firstName}</td>
-              <td>{lastName}</td>
-              <td>{bloodType}</td>
-              <td class="text-center">
-                <button onClick={()=>{deletePatient(id)}} class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
-                <button onClick={()=>{editPatient(id)}}  data-toggle="modal"
-          data-target="#editPatient" class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
-              </td>
-            </tr>
-    
-   }
+  const clearInputs=()=>{
+    document.getElementById("firstName").value="";
+    document.getElementById("lastName").value="";
+    document.getElementById("email").value="";
+    document.getElementById("street").value="";
+    document.getElementById("state").value="";
+    document.getElementById("postalcode").value="";
+    document.getElementById("city").value="";
+    document.getElementById("bloodtype").value="";
+    document.getElementById("amount").value="";
+  }
 
-   const deletePatient=(id)=>{
-    db.collection("patients").doc(id).delete().then(function() {
-      console.log("Document successfully deleted!");
-  }).catch(function(error) {
-      console.error("Error removing document: ", error);
-  });
-   }
-
-   const editPatient=(id)=>{
-     edit= true;
-     eid=id;
-     
-    //  db.collection("patients").doc({id}).update({
-       
-    //  })
-   } 
-
-    return (
-        <div>       
-  <header>
-    <div class="navbar shadow-sm">
-      <div class="container d-flex justify-content-start">
-        <span class="navbar-brand d-flex">
-          <img alt="logo" src={logo}/>
-          <strong><a class="brand" href="/home">National Blood Donation System</a></strong>
-        </span>
-      </div>
-    </div>
-  </header>
-  <main class="bg-light">
-    <section class="jumbotron text-center py-2">
-      <div class="container">
-        <h4 class="jumbotron-heading">Patients</h4>
-      </div>
-    </section>
-    <div class="container py-1 ">
-      <div class="table-responsive" data-show-pagination-switch="true">
-        <table class="table table-striped table-bordered table-sm">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Last name</th>
-              <th>Blood type</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-             {/* {rowPatientData("1.1.1", "1", "MK", "Kay","B+")} */}
-             {patients.map((patient, index)=>{
-                
-               return rowPatientData(patient.data.id, index+1, patient.data.firstName, patient.data.lastName, patient.data.bloodtype )
-             })}
-              
-          
-   
-            
-          </tbody>
-        </table>
-      </div>
-      <div class="row">
-        <button type="button" class="btn btn-danger btn-block" data-toggle="modal"
-          data-target="#editPatient">
-          Add patient
-        </button>
-      </div>
-      {/* modal */}
-      <div class="modal fade" id="editPatient" tabindex="-1" role="dialog" aria-hidden="true">
+  const modal=(number, firstName, lastName, bloodType)=>{
+    console.log(firstName)
+    return(
+        
+         <div class="modal fade" id="editPatient"  tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Patient</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <button onClick={clearInputs} type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
@@ -145,7 +80,7 @@ export default function Patients() {
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label>Name</label>
-                    <input type="text" class="form-control" id="firstName" placeholder="" required=""/>
+                    <input type="text" class="form-control" id="firstName"  placeholder=""  required=""/>
                     <div class="invalid-feedback">
                       Imię jest wymagane
                     </div>
@@ -244,7 +179,7 @@ export default function Patients() {
             </div>
             <div class="modal-footer">
               <div class="row">
-                <div class="col-6" data-dismiss="modal" > <a  class="btn btn-warning btn-block">
+                <div onClick={clearInputs} class="col-6" data-dismiss="modal" > <a  class="btn btn-warning btn-block">
                     <i class="fas fa-times"></i></a></div>
                 <div class="col-6" onClick={submitPatient} data-dismiss="modal"  > <a id="submitPatient"  class="btn btn-success">
                     <i class="fas fa-check"></i></a></div>
@@ -253,6 +188,105 @@ export default function Patients() {
           </div>
         </div>
       </div>
+      
+    )
+  }
+
+   const rowPatientData=(id, number, firstName, lastName, bloodType, email, amount, city, postalCode, street, state, timeStamp)=>{
+     return <tr>
+              <td>{number}</td>
+              <td>{firstName}</td>
+              <td>{lastName}</td>
+              <td>{bloodType}</td>
+              <td class="text-center">
+                <button onClick={()=>{deletePatient(id)}} class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
+                <button onClick={()=>{editPatient(id,  number, firstName, lastName, bloodType, email, amount, city, postalCode, street, state, timeStamp)}}  data-toggle="modal"
+          data-target="#editPatient" class="btn btn-sm btn-primary"><i class="fas fa-user-edit"></i></button>
+              </td>
+            </tr>
+    
+   }
+
+   const deletePatient=(id)=>{
+    db.collection("patients").doc(id).delete().then(function() {
+      console.log("Document successfully deleted!");
+  }).catch(function(error) {
+      console.error("Error removing document: ", error);
+  });
+   }
+
+   const editPatient=(id,  number, firstName, lastName, bloodType, email, amount, city, postalCode, street, state, timeStamp)=>{
+     edit= true;
+     eid=id;
+      
+     document.getElementById("firstName").value=firstName;
+     document.getElementById("lastName").value=lastName;
+     document.getElementById("email").value=email;
+     document.getElementById("street").value=street;
+     document.getElementById("state").value=state;
+     document.getElementById("postalcode").value=postalCode;
+     document.getElementById("city").value=city;
+     document.getElementById("bloodtype").value=bloodType;
+     document.getElementById("amount").value=amount;
+     modal()
+     
+     
+    //  db.collection("patients").doc({id}).update({
+       
+    //  })
+   } 
+
+    return (
+        <div>       
+  <header>
+    <div class="navbar shadow-sm">
+      <div class="container d-flex justify-content-start">
+        <span class="navbar-brand d-flex">
+          <img alt="logo" src={logo}/>
+          <strong><a class="brand" href="/home">National Blood Donation System</a></strong>
+        </span>
+      </div>
+    </div>
+  </header>
+  <main class="bg-light">
+    <section class="jumbotron text-center py-2">
+      <div class="container">
+        <h4 class="jumbotron-heading">Patients</h4>
+      </div>
+    </section>
+    <div class="container py-1 ">
+      <div class="table-responsive" data-show-pagination-switch="true">
+        <table class="table table-striped table-bordered table-sm">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Last name</th>
+              <th>Blood type</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+             {/* {rowPatientData("1.1.1", "1", "MK", "Kay","B+")} */}
+             {patients.map((patient, index)=>{
+                
+               return rowPatientData(patient.data.id, index+1, patient.data.firstName, patient.data.lastName, patient.data.bloodtype, patient.data.email, patient.data.amount, patient.data.city, patient.data.postalcode, patient.data.street, patient.data.state, patient.data.timeStamp  )
+             })}
+              
+          
+   
+            
+          </tbody>
+        </table>
+      </div>
+      <div class="row">
+        <button type="button" class="btn btn-danger btn-block" data-toggle="modal"
+          data-target="#editPatient">
+          Add patient
+        </button>
+      </div>
+      {/* modal */}
+    {modal()}
     </div>
   </main>
 

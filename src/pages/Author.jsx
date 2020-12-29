@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { db } from '../firebase';
 import logo from '../resources/images/logo2em.svg';
 
@@ -10,6 +10,19 @@ export default function Author() {
     const toggleEdit=()=>{
         setEdit(prevValue=> !prevValue);
     }
+    useEffect(()=>{
+        db.collection("authorInfo").doc("AgdH9NKp3yC3V20KmhMw").get().then(function(doc) {
+            if (doc.exists) {
+               setHeading(doc.data().heading)
+               setBody(doc.data().body)
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
+    },[])
 
    const  _handleKeyDown = (e) => {
         if (e.key === 'Enter') {
